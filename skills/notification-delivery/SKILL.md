@@ -40,3 +40,7 @@ Only mark `delivered=true` on success returned from the actual delivery integrat
 ## Household HTML receipt
 
 Use `templates/email-receipt.html` as the email presentation template. Each authorized household subscriber receives an **individual** email (not group To/CC). Envelope thumbnails must be authenticated/embedded safely; do not expose public image URLs. Include a plain-text fallback. MIME CID construction is **not yet confirmed** for this Gmail integration. Never send a preview automatically; respect `dry_run=true`.
+
+## Gmail dispatcher
+
+For deterministic household email delivery, hand off to `agents/dispatcher/SKILL.md`. Do not use free-form model decisions to select recipients or rewrite the prepared email. Verify private allowlist and authorization, then send one identical approved receipt per recipient, tracking provider acceptance independently. Do not equate Gmail send success with physical delivery to an inbox.
