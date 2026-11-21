@@ -57,3 +57,7 @@ For historical modes, search the connected Gmail account for verified USPS sende
 ## Gmail label policy
 
 After successful envelope analysis, and **only if explicitly enabled** and authorized, apply `MailBrief/Processed` to the specific Gmail message ID using the Gmail label-by-name tool. If analysis is incomplete and the user has authorized review labeling, optionally apply `MailBrief/NeedsReview` instead. Do not label during dry runs. Processing labels do not establish notification delivery.
+
+## Dispatcher handoff
+
+For authenticated household email delivery, use `agents/dispatcher/SKILL.md` with a fixed HTML/text payload and private recipient allowlist. Vision and orchestration perform extraction and report composition; only the dispatcher performs outbound delivery. Initial live executions use the `[Test]` subject prefix. Remove it only after explicit release approval. Actual scans may be included as private attachments when CID inline thumbnails are not supported.
