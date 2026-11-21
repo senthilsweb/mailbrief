@@ -17,17 +17,17 @@
     "./agents/mailbrief.md": {
       "kind": "agent",
       "id": "agent_013ePPXsqe7BUXWqVVNvMa7w",
-      "version": "1",
-      "hash": "bd5ba8e9bec6eb332cad2e11a04d2eba",
-      "remote_hash": "5cc0c1bea393b09647f3de04aa3dcccf",
-      "stamp": "1"
+      "version": "2",
+      "hash": "9ea240d583a4222192b4c9d0fc11c81f",
+      "remote_hash": "b5d13f8a5d13447a79b18c8da0613fa9",
+      "stamp": "2"
     },
     "./deployments/daily-digest.md": {
       "kind": "deployment",
       "id": "depl_01TGdBKiTAttHuvToCoeQduV",
-      "hash": "bef94d9340f76ed40027aef153082af2",
-      "remote_hash": "bef94d9340f76ed40027aef153082af2",
-      "stamp": "2026-11-21T21:39:13.297543Z"
+      "hash": "1a76319c3a15ffe3ddb94c219f2826dd",
+      "remote_hash": "1a76319c3a15ffe3ddb94c219f2826dd",
+      "stamp": "2026-11-21T21:52:25.531919Z"
     },
     "./environments/mailbrief.yaml": {
       "kind": "environment",
@@ -39,30 +39,27 @@
     "./memory_stores/mailbrief-config.yaml": {
       "kind": "memory_store",
       "id": "memstore_0157XCPVUiJme9ePMRmtTAGL",
-      "hash": "2dd5c1c3aa297aa249d1466579c60385",
-      "remote_hash": "2dd5c1c3aa297aa249d1466579c60385",
-      "stamp": "2026-11-21T21:26:15.175982Z"
+      "hash": "695219581ce249f0235d9c8dd66bfc64",
+      "remote_hash": "695219581ce249f0235d9c8dd66bfc64",
+      "stamp": "2026-11-21T21:52:24.949343Z"
     },
     "./skills/mailbrief-digest-formatter": {
       "kind": "skill",
       "id": "skill_01ExfBKjMFHs6VSLf2YjJzwd",
-      "version": "skver_01RSqGhaRrSzQQr4FUPaVMgC",
-      "hash": "f5ed200d78f9a3c12e202e5c6ba1587f",
-      "stamp": "skver_01RSqGhaRrSzQQr4FUPaVMgC"
+      "version": "skver_01XLeYXWjkxRLnpf4ALCnxNG",
+      "hash": "013c8876586df214bf61c13ec27bfe72"
     },
     "./skills/mailbrief-gmail": {
       "kind": "skill",
       "id": "skill_0164vgV44NEcspB2UbGPJ2E6",
-      "version": "skver_01XgunnmXHdjn74ocsTPfYHN",
-      "hash": "9d67c25f727b4d2a9840056a72c937d1",
-      "stamp": "skver_01XgunnmXHdjn74ocsTPfYHN"
+      "version": "skver_014oPTA3hGgvwiUKgzwChBmq",
+      "hash": "000a77ea902cfd4c95e40f81abada25e"
     },
     "./skills/mailbrief-notification-delivery": {
       "kind": "skill",
       "id": "skill_01KxeXU7LDVAYsrDa1tMgA67",
-      "version": "skver_013sw26B5SP4JnyLjJPacbwN",
-      "hash": "4cf151f75cb2c0245a4522eb6faac832",
-      "stamp": "skver_013sw26B5SP4JnyLjJPacbwN"
+      "version": "skver_011ebhDs9mGLpE8kRBYUU7LR",
+      "hash": "dd8c1b1440c09a3cb257c942bdf386be"
     },
     "./skills/mailbrief-vision": {
       "kind": "skill",
