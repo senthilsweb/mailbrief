@@ -73,3 +73,7 @@ Read [manual runs](docs/manual-runs.md) and [single-day image evaluation](docs/v
 The household digest design is finalized: mobile-first stacked cards, envelope thumbnails and individually addressed emails to verified household subscribers. See [templates/README.md](templates/README.md), [the HTML template](templates/email-receipt.html), and [the fictional mock preview](templates/mock-preview.html).
 
 **Preview only:** no real envelope scans or subscribers are committed, and no live email was sent. Inline MIME image/CID support and a deterministic template renderer still require validation before unattended delivery.
+
+## Deterministic dispatcher
+
+Email distribution is delegated to [agents/dispatcher/SKILL.md](agents/dispatcher/SKILL.md). The orchestrator prepares the validated report and hands over an immutable payload; the dispatcher applies the private household allowlist and invokes Gmail once per authorized recipient. HTML and image attachments are supported; embedded CID thumbnails remain unverified. Live runs initially use the `[Test]` subject prefix until explicitly removed. Do not publish recipient lists or real mail images in this repository.
