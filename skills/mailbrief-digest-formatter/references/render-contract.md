@@ -51,7 +51,6 @@ The names above are **fictional**, not USPS observations. `mailpieces` is a repe
 - Recipients come only from the private config; a request can never add one.
 - Track unique `(gmail_message_id, subscriber_id, channel)` delivery keys in a durable private state store for retry safety.
 - After successful **analysis**, the Gmail `MailBrief/Processed` label can be applied where approved; **labeling is not proof of email delivery**.
-- Test mode (`dry_run=true`) never sends, modifies labels or changes subscriptions.
 
 ## Implementation note
 

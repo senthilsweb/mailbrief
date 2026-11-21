@@ -39,10 +39,26 @@ mailpieces whose recipient was read with `high` confidence and matches one of
 the subscriber's `names`, renumbered from 01, with `scan_count` set to that
 subset. If nothing matches, that subscriber gets no email for this digest.
 
+## Subject line
+
+One subject per email, in title case, built from the same record:
+
+```text
+Your USPS Mail Preview for Friday, November 20, 2026: 3 Mailpieces, 0 Packages
+```
+
+- The date is the digest's date in the config timezone, written out in full.
+- Use the USPS-reported counts. Write `1 Mailpiece` and `1 Package` in the
+  singular. Leave a count out when it is unknown.
+- When USPS reports no mail: `Your USPS Mail Preview for Friday, November 20, 2026: No Mail Expected`.
+- For an `own-mail-only` subscriber, count only their mailpieces:
+  `Your USPS Mail Preview for Friday, November 20, 2026: 2 Mailpieces for You`.
+- Plain ASCII only, and no sender or recipient names in the subject.
+
 ## Plain text
 
 ```text
-USPS MailBrief - 2026-11-20
+Your USPS Mail Preview for Friday, November 20, 2026
 Expected: 3 letters, 0 packages (3 scans)
 1. From: Northstar Auto Services -> To: Alex Example
 2. From: Unknown -> To: Unclear

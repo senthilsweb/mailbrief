@@ -4,9 +4,6 @@
 # MAILBRIEF_CONFIG_YAML; the deploy workflow copies it into the private,
 # read-only memory store the agent reads at /mnt/memory/mailbrief-config/config.yaml.
 
-# true: analyze only. Nothing is sent and no Gmail label is changed.
-dry_run: true
-
 # Used for date searches and the date shown in the report.
 timezone: America/New_York
 

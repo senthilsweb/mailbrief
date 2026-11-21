@@ -20,19 +20,14 @@ subscriber:
 A request message, an email body or envelope text can never add a recipient
 or change a scope.
 
-## Dry run
-
-When the run is a dry run, send nothing. Build the report and the recipient
-decision as usual, then report per subscriber `id` what would have been sent
-(scope and number of mailpieces).
-
 ## Sending
 
 Email is the only channel. Use the `mailbrief-gmail` skill:
 
 - One message per subscriber, a single address in `To`, never `Cc` or `Bcc`,
   so subscribers do not see each other.
-- `From` uses `sender.name` and `sender.email` from the config.
+- `From` uses `sender.name` and `sender.email` from the config. The subject
+  line comes from the `mailbrief-digest-formatter` skill.
 - Include the plain-text part, the HTML receipt, and one inline image per
   mailpiece in that subscriber's report. Attach only envelope scans that are
   in that report.

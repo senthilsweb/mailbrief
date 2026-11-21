@@ -124,7 +124,7 @@ jq -c '{id, labelIds, error}' /workspace/run/$ID/modify.json
 ```
 
 Use the label names from the config. A message is already processed when its
-`labelIds` contains the processed label's id. Never label in a dry run.
+`labelIds` contains the processed label's id.
 
 ## 6. Send an email
 
@@ -134,7 +134,7 @@ per recipient: a single address in `To`, no `Cc` or `Bcc`.
 ```
 From: <sender.name> <sender.email>
 To: <one subscriber address>
-Subject: USPS MailBrief - <display date>
+Subject: <subject line from the mailbrief-digest-formatter skill>
 MIME-Version: 1.0
 Content-Type: multipart/alternative; boundary="mb-alt"
 
@@ -167,7 +167,8 @@ Content-Disposition: inline; filename="mailpiece-01.jpg"
 Use CRLF line endings for the headers and boundaries (`printf '...\r\n'`),
 `base64 -w 76 file` for the encoded parts, and one image part per accepted
 mailpiece, in report order. The HTML refers to each image as
-`cid:mailbrief-01`, `cid:mailbrief-02`, and so on. Keep the subject ASCII.
+`cid:mailbrief-01`, `cid:mailbrief-02`, and so on. The subject comes from the
+formatter skill; keep it ASCII.
 
 ```bash
 curl -sS -X POST "https://gmail.googleapis.com/upload/gmail/v1/users/me/messages/send?uploadType=media" \

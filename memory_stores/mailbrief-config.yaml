@@ -1,5 +1,5 @@
 name: mailbrief-config
 description: >-
   Private MailBrief configuration, mounted read-only. config.yaml holds the
-  dry-run switch, timezone, sender, Gmail label names and the subscriber list
+  timezone, sender, Gmail label names and the subscriber list
   (address, scope, consent). It is the only source of recipients.
