@@ -55,9 +55,9 @@ ant apply --dry-run agents environments vaults memory_stores skills deployments
 ant apply agents environments vaults memory_stores skills deployments
 ```
 
-`vault_ids` in `deployments/daily-digest.md` takes the vault's ID, not a
-path. After the first apply, copy the ID from `claude-lock.json` into that
-field and apply again.
+`vault_ids` and the config store's `memory_store_id` in
+`deployments/daily-digest.md` take IDs, not paths. After the first apply, copy
+both IDs from `claude-lock.json` into those fields and apply again.
 
 ## How Gmail access works
 
