@@ -45,3 +45,15 @@ Operate on **USPS Informed Delivery** notices in the connected Gmail account onl
 - `skills/digest-formatter/SKILL.md`
 - `skills/notification-delivery/SKILL.md`
 - `config/policies.md`
+
+## Invocation modes
+
+- `event`: process the Gmail message provided by a supported new-message event.
+- `date`: process the USPS digest(s) for one YYYY-MM-DD date (America/New_York).
+- `range`: process an inclusive YYYY-MM-DD through YYYY-MM-DD interval.
+
+For historical modes, search the connected Gmail account for verified USPS sender and subject, then verify the actual message dates. See `docs/manual-runs.md`. Historical/manual requests default to **dry run**: do not send, label, or otherwise mutate Gmail unless explicitly requested.
+
+## Gmail label policy
+
+After successful envelope analysis, and **only if explicitly enabled** and authorized, apply `MailBrief/Processed` to the specific Gmail message ID using the Gmail label-by-name tool. If analysis is incomplete and the user has authorized review labeling, optionally apply `MailBrief/NeedsReview` instead. Do not label during dry runs. Processing labels do not establish notification delivery.
