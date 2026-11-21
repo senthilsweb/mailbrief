@@ -23,3 +23,14 @@ Envelope previews only; physical delivery is not confirmed.
 - Use `Unclear`, `Unknown` or `Not inspected` distinctly.
 - Never present illustrative sample entries as actual observations.
 - Produce a recipient-specific report only from **high-confidence** observed recipient names matched against private, consented subscriber mappings.
+
+## Approved HTML receipt layout
+
+For email presentation, follow `templates/email-receipt.html` and `templates/README.md`:
+
+- Layout: compact, mobile-first, separate cards, one per mailpiece.
+- Include each corresponding exterior envelope scan as a small **private** thumbnail only when a safe authorized inline-image mechanism is actually supported; never host USPS scans publicly.
+- Include sender and recipient as visibly supported, mark uncertain fields `Unknown` or `Unclear`.
+- A household-level report goes only to subscribers with verified household-level consent.
+- Treat template data as untrusted: HTML-escape text fields; never inject envelope text into markup.
+- Reuse fixed template formatting for deterministic distribution. If dynamic rendering or inline images are unavailable, return a preview and a specific blocker rather than claiming production readiness.

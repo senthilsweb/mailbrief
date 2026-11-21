@@ -67,3 +67,9 @@ No license is granted by default; add a LICENSE file if you want to permit reuse
 - Optional Bash + curl example for **eligible Business/Enterprise Workspace Agents API**: [scripts/trigger-workspace-agent.sh](scripts/trigger-workspace-agent.sh). This endpoint is **not confirmed for personal Plus Work tasks**.
 
 Read [manual runs](docs/manual-runs.md) and [single-day image evaluation](docs/vision-evaluation.md).
+
+## Mobile HTML receipt template
+
+The household digest design is finalized: mobile-first stacked cards, envelope thumbnails and individually addressed emails to verified household subscribers. See [templates/README.md](templates/README.md), [the HTML template](templates/email-receipt.html), and [the fictional mock preview](templates/mock-preview.html).
+
+**Preview only:** no real envelope scans or subscribers are committed, and no live email was sent. Inline MIME image/CID support and a deterministic template renderer still require validation before unattended delivery.

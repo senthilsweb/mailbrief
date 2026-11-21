@@ -36,3 +36,7 @@ If no supported publishing mechanism or secret injection exists in ChatGPT Work,
 Capture `channel`, `recipient_id` (not raw address in public logs), `attempted_at`, `delivered`, and safe error category in private storage.
 
 Only mark `delivered=true` on success returned from the actual delivery integration. Never print bearer tokens or full subscriber lists.
+
+## Household HTML receipt
+
+Use `templates/email-receipt.html` as the email presentation template. Each authorized household subscriber receives an **individual** email (not group To/CC). Envelope thumbnails must be authenticated/embedded safely; do not expose public image URLs. Include a plain-text fallback. MIME CID construction is **not yet confirmed** for this Gmail integration. Never send a preview automatically; respect `dry_run=true`.
