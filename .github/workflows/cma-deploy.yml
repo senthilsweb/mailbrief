@@ -1,0 +1,134 @@
+name: Deploy MailBrief to Claude Managed Agents
+
+# Pull requests get a plan only. A merge to main (or a manual run) applies the
+# files, then syncs the Gmail credentials and the private config from secrets.
+#
+# Secrets:   ANTHROPIC_API_KEY, GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET,
+#            GMAIL_REFRESH_TOKEN, MAILBRIEF_CONFIG_YAML
+# Variables: ANTHROPIC_WORKSPACE_ID
+
+on:
+  pull_request:
+    paths:
+      - "agents/**"
+      - "skills/**"
+      - "environments/**"
+      - "vaults/**"
+      - "memory_stores/**"
+      - "deployments/**"
+      - "claude-lock.json"
+      - ".github/workflows/cma-deploy.yml"
+  push:
+    branches: [main]
+    paths:
+      - "agents/**"
+      - "skills/**"
+      - "environments/**"
+      - "vaults/**"
+      - "memory_stores/**"
+      - "deployments/**"
+      - "claude-lock.json"
+      - ".github/workflows/cma-deploy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: cma-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  ANT_VERSION: "2.12.1"
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+  # The API key is organisation-level, so every request names the workspace.
+  ANTHROPIC_CUSTOM_HEADERS: "anthropic-workspace-id: ${{ vars.ANTHROPIC_WORKSPACE_ID }}"
+  RESOURCES: agents environments vaults memory_stores skills deployments
+
+jobs:
+  plan:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ant
+        run: |
+          curl -fsSL "https://github.com/anthropics/anthropic-cli/releases/download/v${ANT_VERSION}/ant_${ANT_VERSION}_linux_amd64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin ant
+          ant --version
+      - name: Plan
+        run: ant apply --dry-run $RESOURCES
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ant
+        run: |
+          curl -fsSL "https://github.com/anthropics/anthropic-cli/releases/download/v${ANT_VERSION}/ant_${ANT_VERSION}_linux_amd64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin ant
+          ant --version
+
+      - name: Apply agents, skills, environment, vault, config store, deployment
+        run: ant apply --yes $RESOURCES
+
+      - name: Sync Gmail credentials into the vault
+        env:
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+        run: |
+          set -euo pipefail
+          VAULT_ID=$(jq -r '.resources["./vaults/mailbrief.yaml"].id' claude-lock.json)
+          existing=$(ant beta:vaults:credentials list --vault-id "$VAULT_ID" --format jsonl)
+          for name in GMAIL_CLIENT_ID GMAIL_CLIENT_SECRET GMAIL_REFRESH_TOKEN; do
+            export SECRET_NAME="$name" SECRET_VALUE="${!name}"
+            [ -n "$SECRET_VALUE" ] || { echo "::error::secret $name is empty"; exit 1; }
+            id=$(printf '%s\n' "$existing" | jq -r --arg n "$name" 'select(.auth.secret_name == $n) | .id' | head -1)
+            if [ -n "$id" ]; then
+              body=$(jq -n '{auth: {type: "environment_variable", secret_value: env.SECRET_VALUE}}')
+              ant beta:vaults:credentials update --vault-id "$VAULT_ID" --credential-id "$id" --transform id -r <<<"$body"
+            else
+              # Substituted only on requests to Google's token endpoint, in the form body.
+              body=$(jq -n '{
+                display_name: env.SECRET_NAME,
+                auth: {
+                  type: "environment_variable",
+                  secret_name: env.SECRET_NAME,
+                  secret_value: env.SECRET_VALUE,
+                  networking: {type: "limited", allowed_hosts: ["oauth2.googleapis.com"]},
+                  injection_location: {header: false, body: true}
+                }
+              }')
+              ant beta:vaults:credentials create --vault-id "$VAULT_ID" --transform id -r <<<"$body"
+            fi
+          done
+
+      - name: Sync private config into the config store
+        env:
+          MAILBRIEF_CONFIG_YAML: ${{ secrets.MAILBRIEF_CONFIG_YAML }}
+        run: |
+          set -euo pipefail
+          [ -n "$MAILBRIEF_CONFIG_YAML" ] || { echo "::error::secret MAILBRIEF_CONFIG_YAML is empty"; exit 1; }
+          STORE_ID=$(jq -r '.resources["./memory_stores/mailbrief-config.yaml"].id' claude-lock.json)
+          mem_id=$(ant beta:memory-stores:memories list --memory-store-id "$STORE_ID" --format jsonl \
+            | jq -r 'select(.path == "/config.yaml") | .id' | head -1)
+          if [ -n "$mem_id" ]; then
+            body=$(jq -n '{content: env.MAILBRIEF_CONFIG_YAML}')
+            ant beta:memory-stores:memories update --memory-store-id "$STORE_ID" --memory-id "$mem_id" --transform id -r <<<"$body"
+          else
+            body=$(jq -n '{path: "/config.yaml", content: env.MAILBRIEF_CONFIG_YAML}')
+            ant beta:memory-stores:memories create --memory-store-id "$STORE_ID" --transform id -r <<<"$body"
+          fi
+
+      - name: Commit claude-lock.json if it changed
+        if: github.ref == 'refs/heads/main'
+        run: |
+          if ! git diff --quiet -- claude-lock.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add claude-lock.json
+            git commit -m "chore: update claude-lock.json [skip ci]"
+            git push
+          fi

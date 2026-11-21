@@ -1,0 +1,10 @@
+name: mailbrief
+config:
+  type: cloud
+  networking:
+    type: limited
+    # Only Google's token endpoint and the Gmail API. Every host a vault
+    # credential is scoped to must also be listed here.
+    allowed_hosts:
+      - oauth2.googleapis.com
+      - gmail.googleapis.com

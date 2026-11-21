@@ -1,0 +1,5 @@
+# The vault is only the container. Credentials (Gmail OAuth client id, client
+# secret and refresh token) are added from GitHub secrets by the deploy
+# workflow and are never stored in this repository.
+type: vault
+display_name: mailbrief

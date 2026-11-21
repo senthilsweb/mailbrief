@@ -1,0 +1,43 @@
+# MailBrief configuration: EXAMPLE ONLY, fictional values.
+#
+# The real file is never committed. Store it as the GitHub secret
+# MAILBRIEF_CONFIG_YAML; the deploy workflow copies it into the private,
+# read-only memory store the agent reads at /mnt/memory/mailbrief-config/config.yaml.
+
+# true: analyze only. Nothing is sent and no Gmail label is changed.
+dry_run: true
+
+# Used for date searches and the date shown in the report.
+timezone: America/New_York
+
+sender:
+  # Display name on outgoing reports.
+  name: MailBrief
+  # Must be the authenticated Gmail account or one of its send-as aliases.
+  email: owner@example.com
+
+labels:
+  # Applied after a digest was analyzed and delivered. This is the dedup ledger.
+  processed: MailBrief/Processed
+  # Applied instead when analysis was incomplete.
+  needs_review: MailBrief/NeedsReview
+  # false: never label, even on live runs (digests will be re-sent each run).
+  apply: true
+
+subscribers:
+  - id: owner
+    email: owner@example.com
+    # household: every mailpiece. own-mail-only: only pieces addressed to `names`.
+    scope: household
+    enabled: true
+    consent: true
+
+  - id: member
+    email: member@example.com
+    scope: own-mail-only
+    # Names as they appear on envelopes, used for own-mail-only matching.
+    names:
+      - Alex Example
+      - A. Example
+    enabled: false
+    consent: false

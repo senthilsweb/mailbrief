@@ -1,0 +1,77 @@
+name: Run MailBrief on demand
+
+# Starts one MailBrief session for a date or a range. Date and range runs are
+# dry runs unless dry_run is unticked. Recipients always come from the private
+# config, never from these inputs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: What to process
+        type: choice
+        options: [scheduled, date, range]
+        default: date
+      date:
+        description: "Date (YYYY-MM-DD), or the first day of a range"
+        required: false
+      end_date:
+        description: "Last day of a range (YYYY-MM-DD)"
+        required: false
+      dry_run:
+        description: Analyze only; send nothing and change no labels
+        type: boolean
+        default: true
+
+env:
+  ANT_VERSION: "2.12.1"
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+  ANTHROPIC_CUSTOM_HEADERS: "anthropic-workspace-id: ${{ vars.ANTHROPIC_WORKSPACE_ID }}"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ant
+        run: |
+          curl -fsSL "https://github.com/anthropics/anthropic-cli/releases/download/v${ANT_VERSION}/ant_${ANT_VERSION}_linux_amd64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin ant
+      - name: Start session
+        env:
+          MODE: ${{ inputs.mode }}
+          DATE: ${{ inputs.date }}
+          END_DATE: ${{ inputs.end_date }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          re='^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+          case "$MODE" in
+            scheduled) what="scheduled" ;;
+            date)  [[ "$DATE" =~ $re ]] || { echo "::error::date must be YYYY-MM-DD"; exit 1; }
+                   what="date $DATE" ;;
+            range) [[ "$DATE" =~ $re && "$END_DATE" =~ $re ]] || { echo "::error::date and end_date must be YYYY-MM-DD"; exit 1; }
+                   [[ ! "$DATE" > "$END_DATE" ]] || { echo "::error::date must not be after end_date"; exit 1; }
+                   what="range $DATE..$END_DATE" ;;
+          esac
+          export TEXT="Run MailBrief in mode: $what. dry_run=$DRY_RUN. Finish with the run summary."
+
+          lock() { jq -r --arg k "$1" '.resources[$k].id' claude-lock.json; }
+          body=$(jq -n \
+            --arg agent "$(lock ./agents/mailbrief.md)" \
+            --arg env "$(lock ./environments/mailbrief.yaml)" \
+            --arg vault "$(lock ./vaults/mailbrief.yaml)" \
+            --arg store "$(lock ./memory_stores/mailbrief-config.yaml)" \
+            --arg title "MailBrief $what" '{
+              agent: $agent,
+              environment_id: $env,
+              vault_ids: [$vault],
+              title: $title,
+              resources: [{type: "memory_store", memory_store_id: $store, access: "read_only"}],
+              budget: {type: "limit", max_list_cost: {amount: "50", currency: "USD"}},
+              initial_events: [{type: "user.message", content: [{type: "text", text: env.TEXT}]}]
+            }')
+          sid=$(ant beta:sessions create --transform id -r <<<"$body")
+          echo "Session: $sid"
+          echo "### MailBrief session started: \`$sid\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Follow it in the Claude Console under Sessions, or with \`ant beta:sessions connect $sid\`." >> "$GITHUB_STEP_SUMMARY"
