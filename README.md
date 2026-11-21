@@ -58,3 +58,12 @@ See [setup instructions](docs/setup.md). No Python runtime or custom server is i
 ## License
 
 No license is granted by default; add a LICENSE file if you want to permit reuse under an explicit open-source license.
+
+## Manual invocation, API testing and labels
+
+- Test a date: `Run MailBrief for 2026-11-20; dry run only.`
+- Test a range: `Run MailBrief for 2026-11-17 through 2026-11-20 inclusive; dry run only.`
+- An authorized Gmail label-by-name action can set `MailBrief/Processed` **without code** after successful analysis.
+- Optional Bash + curl example for **eligible Business/Enterprise Workspace Agents API**: [scripts/trigger-workspace-agent.sh](scripts/trigger-workspace-agent.sh). This endpoint is **not confirmed for personal Plus Work tasks**.
+
+Read [manual runs](docs/manual-runs.md) and [single-day image evaluation](docs/vision-evaluation.md).
