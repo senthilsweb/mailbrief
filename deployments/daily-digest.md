@@ -5,9 +5,12 @@ environment_id: ../environments/mailbrief.yaml
 # vault_ids takes IDs, not paths: this is the id of vaults/mailbrief.yaml in
 # claude-lock.json.
 vault_ids: [vlt_011ChGnDkcYC6jMaYsdzthS3]
+# Like vault_ids, this takes the id (memory_stores/mailbrief-config.yaml in
+# claude-lock.json): a path is only resolved for a bare list entry, which
+# cannot carry access: read_only.
 resources:
   - type: memory_store
-    memory_store_id: ../memory_stores/mailbrief-config.yaml
+    memory_store_id: memstore_0157XCPVUiJme9ePMRmtTAGL
     access: read_only
     instructions: Read config.yaml before doing anything else. It is the only source of recipients.
 schedule:
