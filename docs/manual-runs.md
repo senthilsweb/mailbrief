@@ -34,6 +34,6 @@ We have verified the available `apply_labels_to_emails` action in this account. 
 
 The official **Workspace Agents API trigger** is documented for eligible Business/Enterprise workspaces with a published Workspace Agent API channel and a scoped Workspace Agent access token. If eligible, use `scripts/trigger-workspace-agent.sh`. It queues an asynchronous run and returns a conversation URL/run ID rather than a synchronous digest. **Do not use an OpenAI Platform API key** with that endpoint. The script is optional, not the primary Plus workflow.
 
-Reference: https://developers.openai.com/api/docs/guides/chatgpt/workspace-agents/trigger-runs
+Reference: https://developers.openai.com/workspace-agents/trigger-runs
 
 An entirely different option is a fresh OpenAI Platform Responses/Agents API implementation with uploaded skills, but it is separately billed and its agent would not automatically inherit ChatGPT's Gmail connection. It is not this repository's initial architecture.
