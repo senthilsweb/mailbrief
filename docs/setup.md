@@ -1,47 +1,81 @@
-# Setup — OpenAI-managed MailBrief
+# Setup: MailBrief on Claude Managed Agents
 
-## 1. Gmail
+MailBrief runs as two managed agents. Everything in this repository is
+Markdown or YAML; the `ant` CLI syncs it to the Claude Developer Platform.
 
-Connect Gmail in ChatGPT, then verify a Work event trigger for a *new message* matching USPS Informed Delivery digests. If event-based trigger configuration is unavailable for the account, that is a blocker; do not silently replace it with a polling service.
+## What gets created
 
-Match the sender address `USPSInformeddelivery@email.informeddelivery.usps.com` and subject `Your Daily Digest`. Actual USPS digests may contain **inline JPEG MIME parts** while `has_attachment=false`. Verify that the managed task can access their image pixels.
+| File | Resource |
+| --- | --- |
+| `agents/mailbrief.md` | Coordinator agent (Gmail, formatting, delivery) |
+| `agents/mailbrief-vision.md` | Read-only envelope reader the coordinator delegates to |
+| `skills/*/SKILL.md` | Four skills in the agentskills.io layout |
+| `environments/mailbrief.yaml` | Sandbox; egress limited to Google OAuth and Gmail |
+| `vaults/mailbrief.yaml` | Vault holding the Gmail OAuth client and refresh token |
+| `memory_stores/mailbrief-config.yaml` | Private store holding `config.yaml`, mounted read-only |
+| `deployments/daily-digest.md` | Daily schedule and the message that starts each run |
 
-## 2. Skills
+`claude-lock.json` records the IDs. Commit it.
 
-Load `SKILL.md` plus the referenced Markdown sub-skills into the managed task by a supported skill or file mechanism. A GitHub repository alone does not automatically install or activate skills in ChatGPT.
+## One-time prerequisites
 
-## 3. Runtime secrets
+1. **Anthropic.** An API key and the ID of the workspace MailBrief lives in.
+2. **Google.** A Google Cloud project with the Gmail API enabled, an OAuth
+   client of type "Web application", the app published ("In production"), and
+   a refresh token for the mailbox that receives the USPS digests with the
+   scope `https://www.googleapis.com/auth/gmail.modify`.
+3. **Config.** Copy `config/mailbrief.example.yaml`, fill in the sender and
+   subscribers, and keep it out of git (the `private/` folder is ignored).
 
-**Public GitHub:** no actual credentials or subscriber contact details.
+## GitHub configuration
 
-**GitHub Actions Secrets:** suitable only for an Actions job that actually runs in GitHub Actions. They cannot be directly read by a ChatGPT-managed Work task.
+Secrets:
 
-**ChatGPT Work:** use its documented authorized app connections and, *if available in the current environment*, a supported secret-management or credential mechanism. Arbitrary `OPENAI_*` or `NTFY_*` environment variables are **not guaranteed** to be supported by Work. Never paste secret values into prompts, repository files or PRs.
+| Secret | Value |
+| --- | --- |
+| `ANTHROPIC_API_KEY` | Anthropic API key |
+| `GMAIL_CLIENT_ID` | Google OAuth client ID |
+| `GMAIL_CLIENT_SECRET` | Google OAuth client secret |
+| `GMAIL_REFRESH_TOKEN` | Refresh token for the mailbox |
+| `MAILBRIEF_CONFIG_YAML` | The whole private config file |
 
-Suggested *names* for a future adapter (not actual values):
+Variable: `ANTHROPIC_WORKSPACE_ID` (for example `wrkspc_...`).
 
-- `NTFY_SERVER_URL`
-- `NTFY_TOPIC`
-- `NTFY_AUTH_TOKEN`
-- `MAILBRIEF_SUBSCRIBER_CONFIG`
+## Deploying
 
-## 4. ntfy integration
+`.github/workflows/cma-deploy.yml` plans on pull requests and applies on a
+merge to `main`. After applying it copies the Gmail secrets into the vault and
+the config into the config store, so changing a subscriber means updating the
+`MAILBRIEF_CONFIG_YAML` secret and re-running the workflow.
 
-Confirm the provider is **ntfy**. Set up protected topics with appropriate read/write access. Verify a supported outbound integration in ChatGPT Work before planning unattended delivery. If an HTTP-capable connector is absent, the no-code constraint may require a supported integration app or a change of delivery channel.
+From a laptop:
 
-## 5. Persistent private state
+```sh
+ant apply --dry-run agents environments vaults memory_stores skills deployments
+ant apply agents environments vaults memory_stores skills deployments
+```
 
-Store subscriber opt-in, address/recipient mappings, message ID deduplication, delivery receipts and preferences in a supported private store. Do not store these in the public repository or assume chat history is an exactly-once ledger.
+`vault_ids` in `deployments/daily-digest.md` takes the vault's ID, not a
+path. After the first apply, copy the ID from `claude-lock.json` into that
+field and apply again.
 
-## 6. Activation gates
+## How Gmail access works
 
-- [ ] Gmail event trigger works
-- [ ] Inline MIME images readable
-- [ ] Vision evaluation matches manually verified scans
-- [ ] Private subscriber registry exists
-- [ ] Durable processing ledger verified
-- [ ] Authorized email sending verified, if used
-- [ ] Authenticated ntfy push verified, if used
-- [ ] No secret or private mail data leaked to repository
+The agent has no Gmail connector. At the start of a run it exchanges the
+refresh token for a one-hour access token and then calls the Gmail REST API
+with `curl`. The client secret and refresh token never enter the sandbox: it
+holds placeholders, and the real values are substituted only on requests to
+`oauth2.googleapis.com`. The one-hour access token does exist inside the
+sandbox for the length of the run.
 
-Until all applicable checks pass, run in preview/draft mode.
+## Going live
+
+Keep `dry_run: true` in the config until a dry run of a real digest reads the
+envelopes correctly. Then set `dry_run: false` with a single test subscriber,
+confirm the email, and only then add the household.
+
+## Tracing
+
+Traces go to Arize through an organisation-level OpenTelemetry destination
+(Console → Settings → OpenTelemetry, or the Admin API). It is not part of
+these files and needs an organisation admin to add it once.
