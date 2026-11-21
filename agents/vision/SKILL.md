@@ -9,6 +9,18 @@ description: Extract cautiously grounded visible sender and recipient details fr
 
 One envelope image (JPEG, PNG or accessible PDF page) and a non-sensitive item index. Images may be inline MIME parts. A vision-capable model/tool must actually be able to access image pixels. Do not substitute analysis of filenames or message snippets for image inspection.
 
+## Image category
+
+Inspect the pixels of each candidate image and return one `image_category`:
+
+| Category | Visible evidence | Action |
+| --- | --- | --- |
+| `mailpiece_preview` | A scanned postal item with evidence such as an address block, postal markings, or an addressed panel. A promotional mailer can qualify. | Include the preview and extract legible fields. |
+| `digest_artwork` | Digest artwork such as a standalone banner, logo, product photo or call-to-action without evidence of an actual mailpiece. | Exclude from receipt thumbnails and scan count. |
+| `uncertain` | Cropping, blur or conflicting evidence prevents a reliable decision. | Reinspect once. If still uncertain, omit the thumbnail and report an unresolved candidate. |
+
+Record a short, non-identifying visual cue in `evidence_note`. Keep the USPS-reported mailpiece count independent of these decisions. Set `is_mailpiece` to true only for an accepted preview; for other categories skip name extraction. If pixels are unavailable, record the candidate as uninspected and follow the orchestrator's missing-image rule.
+
 ## Tasks
 
 - Determine whether the image is a genuine mailpiece preview rather than marketing art, logos or tracking pixels.
@@ -25,6 +37,7 @@ One envelope image (JPEG, PNG or accessible PDF page) and a non-sensitive item i
 ```json
 {
   "item_index": 1,
+  "image_category": "mailpiece_preview",
   "is_mailpiece": true,
   "sender": "Unknown",
   "recipient": "Unclear",
