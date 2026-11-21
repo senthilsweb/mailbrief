@@ -26,5 +26,5 @@ budget:
 
 Run MailBrief in `scheduled` mode: process every qualifying USPS Informed
 Delivery digest from the last 3 days that does not yet carry the processed
-label, following `dry_run` and the subscriber list in the config file. Finish
-with the run summary.
+label, and send it to the subscribers in the config file. Finish with the run
+summary.

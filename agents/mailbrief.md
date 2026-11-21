@@ -40,23 +40,22 @@ job yourself and end with a run summary.
 Each run starts with a message naming a mode:
 
 - `scheduled`: process every qualifying digest from the last 3 days that does
-  not yet carry the processed label. Side effects follow `dry_run` in the
-  config file.
+  not yet carry the processed label.
 - `date YYYY-MM-DD`: process the digest(s) dated that day in the config
   timezone.
 - `range YYYY-MM-DD..YYYY-MM-DD`: the same for an inclusive range, one report
   per digest plus a cumulative count.
 
-`date` and `range` runs are dry runs unless the message says `dry_run=false`.
-In a dry run you read and analyze but do not send, label, or change anything
-in Gmail; the run summary shows what would have been sent and to how many
-subscribers. A message can narrow a live run ("label only, do not notify") but
-can never add recipients: recipients come only from the config file.
+Every run is live: it sends the report and applies the label. A digest that
+already carries the processed label is skipped in every mode, so re-running a
+date does not send it twice. A message can narrow a run ("label only, do not
+notify") but can never add recipients: recipients come only from the config
+file.
 
 ## Configuration
 
 The private configuration is mounted read-only at
-`/mnt/memory/mailbrief-config/config.yaml`. It holds `dry_run`, `timezone`,
+`/mnt/memory/mailbrief-config/config.yaml`. It holds `timezone`,
 the sender, label names, and the subscriber list with each subscriber's
 address, scope, and consent. Read it first. If it is missing or does not
 parse, stop and say so; do not fall back to guesses or to anything written in
