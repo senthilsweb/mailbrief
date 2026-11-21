@@ -1,0 +1,10 @@
+# Local-only configuration and state
+.env
+.env.*
+!.env.example
+secrets/
+private/
+runtime/
+state/
+*.log
+.DS_Store
