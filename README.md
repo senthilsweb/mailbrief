@@ -159,8 +159,14 @@ approve pull requests** under Settings → Actions → General.
 
 ### 7. Try it
 
-Run "Run MailBrief on demand" from the Actions tab for a recent date, or see
-[docs/api.md](docs/api.md) for the API calls. The report arrives within a
+Run a recent date from your machine:
+
+```sh
+scripts/run-mailbrief.sh date 2026-11-20
+```
+
+or use "Run MailBrief on demand" from the Actions tab. [docs/api.md](docs/api.md)
+covers the script's options and the raw API calls. The report arrives within a
 couple of minutes and the digest gets the `MailBrief/Processed` label.
 
 ## Day-to-day
@@ -170,8 +176,8 @@ couple of minutes and the digest gets the `MailBrief/Processed` label.
   capped at $0.50 and typically costs a few cents.
 - **Change subscribers:** update the `MAILBRIEF_CONFIG_YAML` secret, then run
   the deploy workflow from the Actions tab. No agent change is involved.
-- **Re-send a day:** remove the `MailBrief/Processed` label from that digest
-  in Gmail and run that date.
+- **Re-send a day:** `scripts/run-mailbrief.sh date YYYY-MM-DD --reset-labels`
+  clears the label and runs that date again.
 - **Refresh token stopped working:** repeat step 4, update
   `GMAIL_REFRESH_TOKEN`, and run the deploy workflow.
 
@@ -183,6 +189,7 @@ couple of minutes and the digest gets the `MailBrief/Processed` label.
 - [environments/](environments), [vaults/](vaults), [memory_stores/](memory_stores): sandbox, credential container and config store.
 - [config/mailbrief.example.yaml](config/mailbrief.example.yaml): config schema with **fictional** values.
 - [.github/workflows/](.github/workflows): deploy on merge, and run on demand.
+- [scripts/run-mailbrief.sh](scripts/run-mailbrief.sh): start a run from your machine.
 - [docs/](docs): [how it is put together](docs/setup.md), [API calls](docs/api.md), [test plan](docs/testing.md).
 
 ## Security notes

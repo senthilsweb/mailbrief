@@ -7,6 +7,30 @@ Saturday. Each run processes every USPS digest from the last 3 days that does
 not carry the `MailBrief/Processed` label, so a late digest is picked up the
 next day and nothing is sent twice. Each run is capped at $0.50.
 
+## With the script
+
+`scripts/run-mailbrief.sh` wraps the API calls below. It needs `curl` and `jq`,
+reads `ANTHROPIC_API_KEY` from the environment or a git-ignored `.env` at the
+repository root, and takes the resource IDs from `claude-lock.json`.
+
+```sh
+scripts/run-mailbrief.sh date 2026-11-20
+scripts/run-mailbrief.sh range 2026-11-20 2026-11-21
+scripts/run-mailbrief.sh scheduled
+```
+
+It starts the run, waits for it (usually one to two minutes) and prints the
+cost and the agent's run summary. The summary names senders and recipients
+from your mail, so do not run the script where its output is logged publicly.
+
+| Option | Effect |
+| --- | --- |
+| `--reset-labels` | Before the run, remove `MailBrief/Processed` and `MailBrief/NeedsReview` from the digests in the requested date or range, so they are sent again. Needs `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET` and `GMAIL_REFRESH_TOKEN` in the environment or `.env`. |
+| `--no-wait` | Print the session id and return immediately. |
+
+Every run is live: reports go to all enabled subscribers. With
+`--reset-labels` they receive those days again.
+
 ## Through the API
 
 The IDs come from `claude-lock.json`:

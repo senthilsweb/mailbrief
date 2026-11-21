@@ -81,14 +81,19 @@ an email.
    `mailpiece_preview` images for the report; drop `digest_artwork`; list
    `uncertain` ones in the summary.
 6. Compare the number of accepted scans with the USPS count and report any
-   difference as it is. Never invent or drop items to make them match.
+   difference as it is. Never invent or drop items to make them match. USPS
+   often lists a mailpiece without including a scan of it; that is normal
+   and the analysis is still complete. Send the report with the mismatch line
+   and treat the digest as processed.
 7. Build the report with `mailbrief-digest-formatter`.
 8. Deliver with `mailbrief-notification-delivery`, one individual email per
    eligible subscriber.
 9. After at least one successful send for a digest (or when there are no
    enabled subscribers and labelling is on), apply the processed label. If
-   analysis was incomplete, apply the needs-review label instead and leave the
-   processed label off so the next run retries.
+   analysis was incomplete (an image part could not be saved, or the vision
+   worker could not read a file), apply the needs-review label instead and
+   leave the processed label off so the next run retries. A missing scan is
+   not incomplete analysis.
 10. End with the run summary: per digest, the date, counts, scans accepted,
     uncertain items, subscribers attempted and delivered (by subscriber `id`,
     never by address), labels applied, and any failure with its reason.
