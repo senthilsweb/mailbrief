@@ -22,6 +22,13 @@
       "remote_hash": "5cc0c1bea393b09647f3de04aa3dcccf",
       "stamp": "1"
     },
+    "./deployments/daily-digest.md": {
+      "kind": "deployment",
+      "id": "depl_01TGdBKiTAttHuvToCoeQduV",
+      "hash": "bef94d9340f76ed40027aef153082af2",
+      "remote_hash": "bef94d9340f76ed40027aef153082af2",
+      "stamp": "2026-11-21T21:39:13.297543Z"
+    },
     "./environments/mailbrief.yaml": {
       "kind": "environment",
       "id": "env_01MQ3NMvD7rT7onUrq5uDBds",
@@ -40,25 +47,29 @@
       "kind": "skill",
       "id": "skill_01ExfBKjMFHs6VSLf2YjJzwd",
       "version": "skver_01RSqGhaRrSzQQr4FUPaVMgC",
-      "hash": "f5ed200d78f9a3c12e202e5c6ba1587f"
+      "hash": "f5ed200d78f9a3c12e202e5c6ba1587f",
+      "stamp": "skver_01RSqGhaRrSzQQr4FUPaVMgC"
     },
     "./skills/mailbrief-gmail": {
       "kind": "skill",
       "id": "skill_0164vgV44NEcspB2UbGPJ2E6",
       "version": "skver_01XgunnmXHdjn74ocsTPfYHN",
-      "hash": "9d67c25f727b4d2a9840056a72c937d1"
+      "hash": "9d67c25f727b4d2a9840056a72c937d1",
+      "stamp": "skver_01XgunnmXHdjn74ocsTPfYHN"
     },
     "./skills/mailbrief-notification-delivery": {
       "kind": "skill",
       "id": "skill_01KxeXU7LDVAYsrDa1tMgA67",
       "version": "skver_013sw26B5SP4JnyLjJPacbwN",
-      "hash": "4cf151f75cb2c0245a4522eb6faac832"
+      "hash": "4cf151f75cb2c0245a4522eb6faac832",
+      "stamp": "skver_013sw26B5SP4JnyLjJPacbwN"
     },
     "./skills/mailbrief-vision": {
       "kind": "skill",
       "id": "skill_013TdigtJxEH6M95RYYNb78K",
       "version": "skver_01MqKAxYoo7iiCgMLq8L1fFn",
-      "hash": "56786beefdb28a5c8e2a4df7461fe66a"
+      "hash": "56786beefdb28a5c8e2a4df7461fe66a",
+      "stamp": "skver_01MqKAxYoo7iiCgMLq8L1fFn"
     },
     "./vaults/mailbrief.yaml": {
       "kind": "vault",
