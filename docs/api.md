@@ -49,15 +49,16 @@ curl -fsS https://api.anthropic.com/v1/sessions "${H[@]}" -d @- <<EOF
   "budget": {"type": "limit", "max_list_cost": {"amount": "50", "currency": "USD"}},
   "initial_events": [{
     "type": "user.message",
-    "content": [{"type": "text", "text": "Run MailBrief in mode: date 2026-11-20. dry_run=true. Finish with the run summary."}]
+    "content": [{"type": "text", "text": "Run MailBrief in mode: date 2026-11-20. Finish with the run summary."}]
   }]
 }
 EOF
 ```
 
 Modes are `scheduled`, `date YYYY-MM-DD` and `range YYYY-MM-DD..YYYY-MM-DD`.
-`date` and `range` are dry runs unless the message says `dry_run=false`.
-Recipients always come from the private config; a request cannot add any.
+Every run sends the report and labels the digest; a digest that already has
+the `MailBrief/Processed` label is skipped. Recipients always come from the
+private config; a request cannot add any.
 
 The response carries the session `id`. Read the result with:
 
