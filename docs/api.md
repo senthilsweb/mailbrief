@@ -92,8 +92,3 @@ curl -fsS "https://api.anthropic.com/v1/sessions/$SESSION_ID/events" "${H[@]}"
 
 or watch it live with `ant beta:sessions connect $SESSION_ID`, or in the
 Claude Console under Sessions.
-
-### From GitHub
-
-The "Run MailBrief on demand" workflow (`.github/workflows/cma-run.yml`) does
-the same from the Actions tab or `gh workflow run cma-run.yml -f mode=date -f date=2026-11-20`.

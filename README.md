@@ -165,8 +165,7 @@ Run a recent date from your machine:
 scripts/run-mailbrief.sh date 2026-11-20
 ```
 
-or use "Run MailBrief on demand" from the Actions tab. [docs/api.md](docs/api.md)
-covers the script's options and the raw API calls. The report arrives within a
+[docs/api.md](docs/api.md) covers the script's options and the raw API calls. The report arrives within a
 couple of minutes and the digest gets the `MailBrief/Processed` label.
 
 ## Day-to-day
@@ -188,7 +187,7 @@ couple of minutes and the digest gets the `MailBrief/Processed` label.
 - [deployments/daily-digest.md](deployments/daily-digest.md): the schedule and the message that starts each run.
 - [environments/](environments), [vaults/](vaults), [memory_stores/](memory_stores): sandbox, credential container and config store.
 - [config/mailbrief.example.yaml](config/mailbrief.example.yaml): config schema with **fictional** values.
-- [.github/workflows/](.github/workflows): deploy on merge, and run on demand.
+- [.github/workflows/](.github/workflows): deploy on merge.
 - [scripts/run-mailbrief.sh](scripts/run-mailbrief.sh): start a run from your machine.
 - [docs/](docs): [how it is put together](docs/setup.md), [API calls](docs/api.md), [test plan](docs/testing.md).
 
