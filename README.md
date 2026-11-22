@@ -19,41 +19,9 @@ contents**. They are previews of expected mail, not proof of delivery.
 
 ## How it works
 
-```mermaid
-flowchart LR
-  API["API call or script<br/>any date or range"]
+![MailBrief architecture: an API call or the built-in schedule starts a run on Claude Managed Agents. Inside an isolated sandbox the mailbrief coordinator and the read-only mailbrief-vision agent work together. The schedule, four skills, config store and vault sit on the platform outside the sandbox. The coordinator talks to the Gmail API, which delivers one email to each subscriber. Traces go out over OTLP. GitHub Actions deploys from the repo. Dashed boxes are extension points that are not built yet: MCP tools for a database, a push alert, evals, and other mailboxes.](docs/images/mailbrief-architecture.png)
 
-  subgraph CMA["Claude Managed Agents: runs the agent loop and hosts the sandbox"]
-    direction TB
-    subgraph SB["Isolated sandbox: reaches only Google sign-in and Gmail"]
-      direction LR
-      A["mailbrief<br/>coordinator"]
-      V["mailbrief-vision<br/>read-only"]
-      A -- "one image" --> V
-      V -- "JSON record" --> A
-    end
-    SCH["Schedule<br/>daily, 10:30"]
-    SK["4 skills<br/>SKILL.md folders"]
-    CF["Config store<br/>subscribers, read-only"]
-    VA["Vault<br/>Gmail secrets"]
-    SCH -- "starts each run" --> SB
-    SK -- "loaded as files" --> SB
-    CF -- "mounted read-only" --> SB
-    VA -. "added to requests after they leave" .-> SB
-  end
-
-  G["Gmail API"]
-  S["Subscribers<br/>one email each"]
-  O["Traces over OTLP<br/>Arize, LangSmith or any OTLP backend"]
-  GH["GitHub repo<br/>Markdown + YAML"]
-  GA["GitHub Actions<br/>plan on PR, apply on merge"]
-
-  API --> CMA
-  SB <--> G
-  G --> S
-  CMA -- "traces" --> O
-  GH --> GA --> CMA
-```
+Solid lines are built and running. Dashed boxes are extension points that are not built yet.
 
 - **Two agents.** The coordinator handles Gmail and delivery. The vision
   agent only reads image files; it has no shell, no network and no way to
