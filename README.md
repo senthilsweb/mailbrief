@@ -19,21 +19,21 @@ contents**. They are previews of expected mail, not proof of delivery.
 
 ## How it works
 
-```mermaid
-flowchart TD
-    S["Daily schedule or API call"] --> A["mailbrief (coordinator agent)"]
-    C["Private config: sender, subscribers"] --> A
-    A -->|"Gmail REST: find digest, save scans"| G["Gmail"]
-    A -->|"one image each"| V["mailbrief-vision (read-only agent)"]
-    V -->|"sender, recipient, confidence"| A
-    A --> F["Format report (text + HTML receipt)"]
-    F -->|"one email per consented subscriber"| G
-    A -->|"MailBrief/Processed label"| G
-```
+![MailBrief architecture: an API call or the built-in schedule starts a run on Claude Managed Agents. Inside an isolated sandbox the mailbrief coordinator and the read-only mailbrief-vision agent work together. The schedule, four skills, config store and vault sit on the platform outside the sandbox. The coordinator talks to the Gmail API, which delivers one email to each subscriber. Traces go out over OTLP. GitHub Actions deploys from the repo. Dashed boxes are extension points that are not built yet: MCP tools for a database, a push alert, evals, and other mailboxes.](docs/images/mailbrief-architecture.png)
+
+Solid lines are built and running. Dashed boxes are extension points that are not built yet.
 
 - **Two agents.** The coordinator handles Gmail and delivery. The vision
   agent only reads image files; it has no shell, no network and no way to
   send anything, so text on an envelope cannot steer a send.
+- **What runs where.** The agents' commands run in a fresh sandbox for each
+  run. The schedule, the skills, the config store and the vault sit on the
+  platform, outside the sandbox: skills and config are made visible inside as
+  files, and vault secrets are added to a request only after it leaves the
+  sandbox. GitHub Actions is used only to deploy; the daily run does not
+  depend on it.
+- **Traces.** Every run is sent as a trace to an OTLP backend, set once at
+  the organisation level.
 - **Dedup by label.** A processed digest gets the `MailBrief/Processed` Gmail
   label and is skipped afterwards, in every kind of run.
 - **Private data stays private.** Subscribers and the sender live in a config
